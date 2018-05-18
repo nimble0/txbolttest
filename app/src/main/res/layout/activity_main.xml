@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".MainActivity"
+	android:orientation="vertical">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<Spinner android:id="@+id/ports"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<NumberPicker android:id="@+id/baudrate"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<Spinner android:id="@+id/data_bits"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<Spinner android:id="@+id/stop_bits"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<Spinner android:id="@+id/parity"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal">
+
+		<EditText android:id="@+id/log"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_height="match_parent"
+			android:background="#bbb"
+			android:layout_margin="5dp"
+			android:gravity="top" />
+
+		<EditText android:id="@+id/strokes"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_height="match_parent"
+			android:background="#bbb"
+			android:layout_margin="5dp"
+			android:gravity="top" />
+
+	</LinearLayout>
+
+</LinearLayout>
