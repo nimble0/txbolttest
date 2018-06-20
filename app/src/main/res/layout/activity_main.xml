@@ -11,25 +11,58 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
-		<Spinner android:id="@+id/ports"
+		<TextView
+			android:text="Devices"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+		<Spinner android:id="@+id/devices"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
-		<NumberPicker android:id="@+id/baudrate"
+		<TextView
+			android:text="Baud rate"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
+		<EditText android:id="@+id/baudrate"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="9600" />
 
+		<TextView
+			android:text="Data bits"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/data_bits"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content"
+			android:entries="@array/data_bits" />
 
+		<TextView
+			android:text="Stop bits"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/stop_bits"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" />
+			android:layout_height="wrap_content"
+			android:entries="@array/stop_bits" />
 
-		<Spinner android:id="@+id/parity"
+		<TextView
+			android:text="Parity"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
+		<Spinner android:id="@+id/parity"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:entries="@array/parity" />
+
+		<TextView
+			android:text="Flow control"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+		<Spinner android:id="@+id/flow_control"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:entries="@array/flow_control" />
 
 	</LinearLayout>
 
