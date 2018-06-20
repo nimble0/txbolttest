@@ -13,51 +13,86 @@
 
 		<TextView
 			android:text="Devices"
-			android:layout_width="wrap_content"
+			android:layout_width="100dp"
 			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/devices"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
 
+		<Button android:id="@+id/open_device"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Open device" />
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
 		<TextView
 			android:text="Baud rate"
-			android:layout_width="wrap_content"
+			android:layout_width="100dp"
 			android:layout_height="wrap_content" />
 		<EditText android:id="@+id/baudrate"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="9600" />
 
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
 		<TextView
 			android:text="Data bits"
-			android:layout_width="wrap_content"
+			android:layout_width="100dp"
 			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/data_bits"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:entries="@array/data_bits" />
 
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
 		<TextView
 			android:text="Stop bits"
-			android:layout_width="wrap_content"
+			android:layout_width="100dp"
 			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/stop_bits"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:entries="@array/stop_bits" />
 
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
 		<TextView
 			android:text="Parity"
-			android:layout_width="wrap_content"
+			android:layout_width="100dp"
 			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/parity"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:entries="@array/parity" />
 
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
 		<TextView
 			android:text="Flow control"
-			android:layout_width="wrap_content"
+			android:layout_width="100dp"
 			android:layout_height="wrap_content" />
 		<Spinner android:id="@+id/flow_control"
 			android:layout_width="wrap_content"
@@ -66,27 +101,11 @@
 
 	</LinearLayout>
 
-	<LinearLayout
+	<EditText android:id="@+id/log"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:orientation="horizontal">
-
-		<EditText android:id="@+id/log"
-			android:layout_width="0dp"
-			android:layout_weight="1"
-			android:layout_height="match_parent"
-			android:background="#bbb"
-			android:layout_margin="5dp"
-			android:gravity="top" />
-
-		<EditText android:id="@+id/strokes"
-			android:layout_width="0dp"
-			android:layout_weight="1"
-			android:layout_height="match_parent"
-			android:background="#bbb"
-			android:layout_margin="5dp"
-			android:gravity="top" />
-
-	</LinearLayout>
+		android:background="#bbb"
+		android:layout_margin="5dp"
+		android:gravity="top" />
 
 </LinearLayout>

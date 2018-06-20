@@ -15,10 +15,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Message
 import android.support.v7.app.AppCompatActivity
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import com.felhr.usbserial.CDCSerialDevice
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
@@ -78,9 +75,9 @@ private val FLOW_CONTROL_MAP = mapOf(
 class MainActivity : AppCompatActivity()
 {
 	private var log: EditText? = null
-	private var strokes: EditText? = null
 
 	private val deviceList = mutableListOf<String>()
+	private var devices: Spinner? = null
 	private var baudRate: EditText? = null
 	private var dataBits: Spinner? = null
 	private var stopBits: Spinner? = null
@@ -132,6 +129,7 @@ class MainActivity : AppCompatActivity()
 					{
 						val intent = Intent(ACTION_USB_PERMISSION_GRANTED)
 						context.sendBroadcast(intent)
+						log?.append("Device access permission granted\n")
 						connection = usbManager!!.openDevice(device)
 						serialPortConnected = true
 						openDevice()
@@ -141,6 +139,7 @@ class MainActivity : AppCompatActivity()
 					{
 						val intent = Intent(ACTION_USB_PERMISSION_NOT_GRANTED)
 						context.sendBroadcast(intent)
+						log?.append("Device access permission not granted\n")
 					}
 				}
 				ACTION_USB_ATTACHED ->
@@ -165,8 +164,15 @@ class MainActivity : AppCompatActivity()
 	/*
      * Request user permission. The response will be received in the BroadcastReceiver
      */
-	private fun requestUserPermission()
+	private fun requestUserPermission(deviceName: String?)
 	{
+		if(deviceName == null)
+		{
+			this.log?.append("No device selected\n")
+			return
+		}
+
+		device = usbManager!!.deviceList[deviceName]
 		val mPendingIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION), 0)
 		usbManager!!.requestPermission(device, mPendingIntent)
 	}
@@ -177,10 +183,9 @@ class MainActivity : AppCompatActivity()
 		setContentView(R.layout.activity_main)
 
 		this.usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-		findSerialPortDevice()
+//		findSerialPortDevice()
 
 		this.log = this.findViewById(R.id.log)
-		this.strokes = this.findViewById(R.id.strokes)
 
 		val devicesSpinner = this.findViewById<Spinner>(R.id.devices)
 		devicesSpinner.adapter = ArrayAdapter<String>(
@@ -188,24 +193,28 @@ class MainActivity : AppCompatActivity()
 			android.R.layout.simple_spinner_item,
 			this.deviceList)
 
+		this.devices = this.findViewById(R.id.devices)
 		this.baudRate = this.findViewById(R.id.baudrate)
 		this.dataBits = this.findViewById(R.id.data_bits)
 		this.stopBits = this.findViewById(R.id.stop_bits)
 		this.parity = this.findViewById(R.id.parity)
 		this.flowControl = this.findViewById(R.id.flow_control)
+
+		this.findViewById<Button>(R.id.open_device).setOnClickListener({
+			this.requestUserPermission(this.devices?.selectedItem as? String)
+		})
 	}
 
 	public override fun onResume()
 	{
 		super.onResume()
+		refreshDevices()
 		setFilters()  // Start listening notifications from UsbService
-		this.log!!.append("onResume\n")
 	}
 
 	public override fun onPause()
 	{
 		super.onPause()
-		this.log!!.append("onPause\n")
 		unregisterReceiver(this.usbReceiver)
 	}
 
@@ -243,16 +252,12 @@ class MainActivity : AppCompatActivity()
 				this.finishStroke()
 		}
 	}
-	private val mCallback = UsbSerialInterface.UsbReadCallback { data ->
-
-		this.receiveBytes(data)
-	}
 
 	fun finishStroke()
 	{
 		if(currentStroke.keys != 0L)
 		{
-			this.strokes?.append(currentStroke.rtfcre)
+			this.log?.append("Stroke: ${currentStroke.rtfcre}")
 			currentStroke = Stroke(TXBOLT_LAYOUT, 0L)
 		}
 	}
@@ -261,49 +266,7 @@ class MainActivity : AppCompatActivity()
 	{
 		this.deviceList.clear()
 		this.deviceList.addAll(this.usbManager!!.deviceList.keys)
-	}
-
-	private fun findSerialPortDevice()
-	{
-		// This snippet will try to open the first encountered usb device connected, excluding usb root hubs
-		val usbDevices = usbManager!!.deviceList
-		if(!usbDevices.isEmpty())
-		{
-			var keep = true
-			for((_, value) in usbDevices)
-			{
-				device = value
-				val deviceVid = device!!.vendorId
-				val devicePid = device!!.productId
-
-				if(deviceVid != 0x1d6b && (devicePid != 0x0001 || devicePid != 0x0002 || devicePid != 0x0003))
-				{
-					// There is a device connected to our Android device. Try to open it as a Serial Port.
-					requestUserPermission()
-					keep = false
-				}
-				else
-				{
-					connection = null
-					device = null
-				}
-
-				if(!keep)
-					break
-			}
-			if(!keep)
-			{
-				// There is no USB devices connected (but usb host were listed). Send an intent to MainActivity.
-				val intent = Intent(ACTION_NO_USB)
-				sendBroadcast(intent)
-			}
-		}
-		else
-		{
-			// There is no USB devices connected. Send an intent to MainActivity
-			val intent = Intent(ACTION_NO_USB)
-			sendBroadcast(intent)
-		}
+		this.log!!.append("Found ${this.usbManager!!.deviceList.size} devices\n")
 	}
 
 	private fun openDevice()
@@ -329,11 +292,12 @@ class MainActivity : AppCompatActivity()
 					FLOW_CONTROL_MAP[this.flowControl?.selectedItem as? String]
 						?: UsbSerialInterface.FLOW_CONTROL_OFF)
 
-				serialPort!!.read(mCallback)
+				serialPort!!.read({ this.receiveBytes(it) })
 
 				// Everything went as expected. Send an intent to MainActivity
 				val intent = Intent(ACTION_USB_READY)
 				this.sendBroadcast(intent)
+				this.log!!.append("Opened device and listening\n")
 			}
 			else
 			{
@@ -343,11 +307,13 @@ class MainActivity : AppCompatActivity()
 				{
 					val intent = Intent(ACTION_CDC_DRIVER_NOT_WORKING)
 					this.sendBroadcast(intent)
+					this.log!!.append("CDC device driver not working\n")
 				}
 				else
 				{
 					val intent = Intent(ACTION_USB_DEVICE_NOT_WORKING)
 					this.sendBroadcast(intent)
+					this.log!!.append("Device driver not working\n")
 				}
 			}
 		}
@@ -356,6 +322,7 @@ class MainActivity : AppCompatActivity()
 			// No driver for given device, even generic CDC driver could not be loaded
 			val intent = Intent(ACTION_USB_NOT_SUPPORTED)
 			this.sendBroadcast(intent)
+			this.log!!.append("No device driver\n")
 		}
 	}
 }
