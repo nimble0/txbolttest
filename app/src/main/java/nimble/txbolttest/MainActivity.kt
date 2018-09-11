@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity()
 	private var log: EditText? = null
 
 	private val deviceList = mutableListOf<String>()
+	private var deviceListAdapter: ArrayAdapter<String>? = null
 	private var devices: Spinner? = null
 	private var baudRate: EditText? = null
 	private var dataBits: Spinner? = null
@@ -173,6 +174,12 @@ class MainActivity : AppCompatActivity()
 		}
 
 		device = usbManager!!.deviceList[deviceName]
+		if(device == null)
+		{
+			this.log?.append("Invalid device: $deviceName\n")
+			return
+		}
+
 		val mPendingIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION), 0)
 		usbManager!!.requestPermission(device, mPendingIntent)
 	}
@@ -188,10 +195,11 @@ class MainActivity : AppCompatActivity()
 		this.log = this.findViewById(R.id.log)
 
 		val devicesSpinner = this.findViewById<Spinner>(R.id.devices)
-		devicesSpinner.adapter = ArrayAdapter<String>(
+		this.deviceListAdapter = ArrayAdapter(
 			this,
 			android.R.layout.simple_spinner_item,
 			this.deviceList)
+		devicesSpinner.adapter = deviceListAdapter
 
 		this.devices = this.findViewById(R.id.devices)
 		this.baudRate = this.findViewById(R.id.baudrate)
@@ -266,6 +274,7 @@ class MainActivity : AppCompatActivity()
 	{
 		this.deviceList.clear()
 		this.deviceList.addAll(this.usbManager!!.deviceList.keys)
+		this.deviceListAdapter?.notifyDataSetChanged()
 		this.log!!.append("Found ${this.usbManager!!.deviceList.size} devices\n")
 	}
 
